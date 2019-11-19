@@ -74,3 +74,48 @@ golem::add_shinyproxy_dockerfile()
 golem::add_heroku_dockerfile()
 ```
 
+Some usefull parameters should be used for this functions.
+
+Let's have a look to some default parameters
+
+```{r}
+golem::add_dockerfile(
+                      repos = "https://cran.rstudio.com/",
+                      sysreqs = TRUE,
+                      expand = FALSE,
+                      update_tar_gz = TRUE,
+                      build_golem_from_source = TRUE
+                      )
+```
+
+#### repos
+
+tThe `repos` parameters allow you to choose the repositorie to use, by default it's the rstudio CRAN repository "https://cran.rstudio.com/". but feel free to use, your own CRAN mirror or the MRAN snapshot <https://mran.microsoft.com/timemachine> to time travel. `add_dockerfile` will use the `remotes::install_version` function to install the exactly same Package version as your current R installation.
+
+#### sysreqs
+
+`sysreqs` is a boolean, if `TRUE` R will connect to https://sysreqs.r-hub.io/ do get all system dependancies for all needed packages (including all dependencies). And a specific line will be added to the Dockerfile
+
+For example if your golem depends to "tidyverse", you need this
+
+```{reval=FALSE}
+golem::get_sysreqs("tidyverse")
+```
+
+```{txt}
+[1] "git-core"               "libcurl4-openssl-dev"  
+[3] "libssl-dev"             "libxml2-dev"           
+[5] "make"                   "pandoc pandoc-citeproc"
+```
+
+in the Dockerfile :
+
+```{txt}
+FROM rocker/r-ver:3.5.1
+RUN apt-get update && apt-get install -y  git-core libcurl4-openssl-dev libssh2-1-dev libssl-dev libxml2-dev make pandoc pandoc-citeproc zlib1g-dev
+```
+
+
+
+
+
